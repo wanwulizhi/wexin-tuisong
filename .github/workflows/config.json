@@ -1,0 +1,23 @@
+{
+    "app_id": "",
+    "app_secret": "",
+    "template_id": "",
+    "user": [
+        "",
+        ""
+    ],
+    "province": "",
+    "city": "",
+    "birthday1": "1996-06-30",
+    "birthday2": "1996-06-13",
+    /*"birthday3": "1997-01-03",*/
+    "love_date": "2022-2-22",
+    "Whether_Eng": "",
+    "Whether_caihongpi": false,
+    "Whether_lizhi": false,
+    "Whether_tip": false,
+    "Whether_health": false,
+    "Whether_lucky": false,
+    "tianxing_API": "",
+    "astro": ""
+}
