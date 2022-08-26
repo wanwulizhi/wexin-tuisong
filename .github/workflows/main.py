@@ -7,6 +7,7 @@ import sys
 import os
 import http.client, urllib
 import json
+
 from zhdate import ZhDate
 global false, null, true
 false = null = true = ''
@@ -183,7 +184,19 @@ def lizhi():
             return data["newslist"][0]["saying"]
         except:
             return ("励志古言API调取错误，请检查API是否正确申请或是否填写正确")
-        
+def zaoan():
+    if (Whether_zaoan!=False):
+        try:
+            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
+            params = urllib.parse.urlencode({'key':tianxing_API})
+            headers = {'Content-type':'application/x-www-form-urlencoded'}
+            conn.request('POST','/zaoan/index',params,headers)
+            res = conn.getresponse()
+            data = res.read()
+            data = json.loads(data)
+            return data['newslist'][0]['content']
+        except:
+            return ("早安API调取错误，请检查API是否正确申请或是否填写正确")        
 
 #下雨概率和建议
 def tip():
@@ -203,7 +216,7 @@ def tip():
             return ("天气预报API调取错误，请检查API是否正确申请或是否填写正确"),""
 
 #推送信息
-def send_message(to_user, access_token, city_name, weather, max_temperature, min_temperature, pipi, lizhi, pop, tips, note_en, note_ch, health_tip, lucky_):
+def send_message(to_user, access_token, city_name, weather, max_temperature, min_temperature, pipi, lizhi, pop, tips, note_en, note_ch, health_tip, lucky_,zaoan_):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -290,6 +303,10 @@ def send_message(to_user, access_token, city_name, weather, max_temperature, min
             "tips": {
                 "value": tips,
                 "color": get_color()
+            },
+            "zaoan": {
+                "value": zaoan_,
+                "color": get_color()
             }
         }
     }
@@ -346,12 +363,16 @@ if __name__ == "__main__":
     Whether_lucky=config["Whether_lucky"]
     #是否启用励志古言API
     Whether_lizhi=config["Whether_lizhi"]
+    #是否启用早安API
+    Whether_zaoan=config["Whether_zaoan"]
     #是否启用彩虹屁API
     Whether_caihongpi=config["Whether_caihongpi"]
     #是否启用健康小提示API
     Whether_health=config["Whether_health"]
     #获取星座
     astro = config["astro"]
+    #早安心语
+    zaoan_=zaoan()
     # 获取词霸每日金句
     note_ch, note_en = get_ciba()
     #彩虹屁
@@ -366,7 +387,7 @@ if __name__ == "__main__":
     lucky_ = lucky()
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, city, weather, max_temperature, min_temperature, pipi, lizhi,pop,tips, note_en, note_ch, health_tip, lucky_)
+        send_message(user, accessToken, city, weather, max_temperature, min_temperature, pipi, lizhi,pop,tips, note_en, note_ch, health_tip, lucky_,zaoan_)
     import time
     time_duration = 3.5
     time.sleep(time_duration)
