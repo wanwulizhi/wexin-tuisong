@@ -7,9 +7,9 @@ import sys
 import os
 import http.client, urllib
 import json
-
 from zhdate import ZhDate
-global false, null, true
+from lxml import etree
+global false, null, truepip
 false = null = true = ''
 def get_color():
     # 获取随机颜色
@@ -133,7 +133,7 @@ def caihongpi():
             data = json.loads(data)
             data = data["newslist"][0]["content"]
             if("XXX" in data):
-                data.replace("XXX","蒋蒋")
+                data.replace("XXX","斌斌")
             return data
         except:
             return ("彩虹屁API调取错误，请检查API是否正确申请或是否填写正确")
@@ -199,24 +199,54 @@ def zaoan():
             return ("早安API调取错误，请检查API是否正确申请或是否填写正确")        
 
 #下雨概率和建议
+# def tip():
+#     if (Whether_tip!=False):
+#         try:
+#             conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
+#             params = urllib.parse.urlencode({'key':tianxing_API,'city':city})
+#             headers = {'Content-type':'application/x-www-form-urlencoded'}
+#             conn.request('POST','/tianqi/index',params,headers)
+#             res = conn.getresponse()
+#             data = res.read()
+#             data = json.loads(data)
+#             pop = data["newslist"][0]["pop"]
+#             tips = data["newslist"][0]["tips"]
+#             return pop,tips
+#         except:
+#             return ("天气预报API调取错误，请检查API是否正确申请或是否填写正确"),""
 def tip():
-    if (Whether_tip!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API,'city':city})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/tianqi/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            pop = data["newslist"][0]["pop"]
-            tips = data["newslist"][0]["tips"]
-            return pop,tips
-        except:
-            return ("天气预报API调取错误，请检查API是否正确申请或是否填写正确"),""
+    # 城市id
+    try:
+        city_id = cityinfo.cityInfo[province][city]["AREAID"]
+    except KeyError:
+        print("推送消息失败，请检查省份或城市是否正确")
+        os.system("pause")
+        sys.exit(1)
+    url = "http://www.weather.com.cn/weather1d/{}.shtml".format(city_id)
+    headers = {'Accept-Encoding': 'gzip, deflate, br',
+           'Accept-Language': 'zh-CN,zh;q=0.9',
+           'Connection': 'keep-alive',
+           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+           'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Mobile Safari/537.36'
+           }
+    res = get(url, headers=headers)
+    
+    # retext=res.text.encode("ISO-8859-1").decode("utf-8")
+    retext=res.content
+    #拿到返回信息
+    restext=etree.HTML(retext,parser=etree.HTMLParser(encoding='utf-8'))
+    city_life=restext.xpath('//div[@class="livezs"]/ul/li/em/text()')
+    clouths=str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/em/text()'))+":"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/span/text()'))+"---"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/p/text()'))
+    #拼接穿衣指数
+    for i in range(0,len(city_life)):
+        city_life[i]+=":"+restext.xpath('//div[@class="livezs"]/ul/li/span/text()')[i]
+        city_life[i]+="---"+restext.xpath('//div[@class="livezs"]/ul/li/p/text()')[i]
+    #拼接其余指数
+    city_life.append(clouths)
+    return str(city_life).replace('[','').replace(']','').replace('\'','').replace('\"','').replace(',','')
 
 #推送信息
-def send_message(to_user, access_token, city_name, weather, max_temperature, min_temperature, pipi, lizhi, pop, tips, note_en, note_ch, health_tip, lucky_,zaoan_):
+def send_message(to_user, access_token, city_name, weather, max_temperature, min_temperature, pipi, lizhi, tips, note_en, note_ch, health_tip, lucky_,zaoan_):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -290,10 +320,10 @@ def send_message(to_user, access_token, city_name, weather, max_temperature, min
                 "color": get_color()
             },
 
-            "pop": {
-                "value": pop,
-                "color": get_color()
-            },
+            # "pop": {
+            #     "value": pop,
+            #     "color": get_color()
+            # },
 
             "health": {
                 "value": health_tip,
@@ -380,14 +410,14 @@ if __name__ == "__main__":
     #健康小提示
     health_tip = health()
     #下雨概率和建议
-    pop,tips = tip()
+    tips = tip()
     #励志名言
     lizhi = lizhi()
     #星座运势
     lucky_ = lucky()
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, city, weather, max_temperature, min_temperature, pipi, lizhi,pop,tips, note_en, note_ch, health_tip, lucky_,zaoan_)
+        send_message(user, accessToken, city, weather, max_temperature, min_temperature, pipi, lizhi,tips, note_en, note_ch, health_tip, lucky_,zaoan_)
     import time
     time_duration = 3.5
     time.sleep(time_duration)

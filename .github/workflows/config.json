@@ -1,7 +1,7 @@
 {
     "app_id": "wx76454d84e3605476",
     "app_secret": "603e79a9d2ca04c2ef931e689aff7de7",
-    "template_id": "NrO6JII6Rf0-vIW3LUQBsjaB9LIcQ7xFmncr85AtbRs",
+    "template_id": "8Z_ZHOlEpvq6FsHS6ouXiT5bj05hwzknSjT4xAIv7ic",
     "user": [
         "oLh3L5wvWA0GYwmbXnek5xbZE9GU",
         "oLh3L5yfVFgBYEP9QA6f0Vg0cRzE"
@@ -11,11 +11,11 @@
     "birthday1": "r1996-05-15",
     "birthday2": "r1996-04-28",
     "love_date": "2022-2-22",
-    "Whether_Eng": "",
+    "Whether_Eng": true,
     "Whether_caihongpi": false,
     "Whether_lizhi": false,
     "Whether_zaoan": true,
-    "Whether_tip": false,
+    "Whether_tip": true,
     "Whether_health": false,
     "Whether_lucky": false,
     "tianxing_API": "8d1b5612c67447220e0f0eafee8da1eb",
