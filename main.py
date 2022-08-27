@@ -243,6 +243,10 @@ def tip():
         city_life[i]+="---"+restext.xpath('//div[@class="livezs"]/ul/li/p/text()')[i]
     #拼接其余指数
     city_life.append(clouths)
+    #聚合起来
+    city_life.pop(0)
+    city_life.pop(1)
+    #删除运动指数与过敏指数
     return str(city_life).replace('[','').replace(']','').replace('\'','').replace('\"','').replace(',','')
 
 #推送信息
@@ -261,6 +265,13 @@ def send_message(to_user, access_token, city_name, weather, max_temperature, min
     love_date = date(love_year, love_month, love_day)
     # 获取在一起的日期差
     love_days = str(today.__sub__(love_date)).split(" ")[0]
+    #获取订婚日期
+    we_year = int(config["we_date"].split("-")[0])
+    we_month = int(config["we_date"].split("-")[1])
+    we_day = int(config["we_date"].split("-")[2])
+    we_date = date(we_year, we_month, we_day)
+    # 获取订婚的日期差
+    we_days = str(we_date.__sub__(today)).split(" ")[0]
     # 获取所有生日数据
     birthdays = {}
     for k, v in config.items():
@@ -294,6 +305,10 @@ def send_message(to_user, access_token, city_name, weather, max_temperature, min
             },
             "love_day": {
                 "value": love_days,
+                "color": get_color()
+            },
+            "we_day": {
+                "value": we_days.replace('-',''),
                 "color": get_color()
             },
             "note_en": {

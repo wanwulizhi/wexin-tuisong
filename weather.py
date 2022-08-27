@@ -89,12 +89,15 @@ def tip():
     #拿到返回信息
     restext=etree.HTML(retext,parser=etree.HTMLParser(encoding='utf-8'))
     city_life=restext.xpath('//div[@class="livezs"]/ul/li/em/text()')
-    clouths=str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/em/text()'))+":"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/span/text()'))+"---"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/p/text()'))
+    clouths=str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/em/text()'))+":"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/span/text()'))+"--"+str(restext.xpath('//div[@class="livezs"]/ul/li[@class="li3 hot"]/a/p/text()'))
     #拼接穿衣指数
     for i in range(0,len(city_life)):
         city_life[i]+=":"+restext.xpath('//div[@class="livezs"]/ul/li/span/text()')[i]
-        city_life[i]+="---"+restext.xpath('//div[@class="livezs"]/ul/li/p/text()')[i]
+        city_life[i]+="--"+restext.xpath('//div[@class="livezs"]/ul/li/p/text()')[i]
     #拼接其余指数
     city_life.append(clouths)
+    city_life.pop(0)
+    city_life.pop(1)
+    #删除运动指数与过敏指数
     return str(city_life).replace('[','').replace(']','').replace('\'','').replace('\"','')
-print(tip())
+print(get_weather())
